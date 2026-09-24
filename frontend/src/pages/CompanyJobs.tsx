@@ -1,0 +1,13 @@
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { getMyCompanyJobs, type ManagedJob } from '../api/jobs';
+import { usePageTitle } from '../hooks/usePageTitle';
+import { api } from '../api/client';
+
+export default function CompanyJobs() {
+    usePageTitle("Manage jobs");
+  const [jobs,setJobs]=useState<ManagedJob[]>([]);const [loading,setLoading]=useState(true);const [error,setError]=useState('');
+  useEffect(()=>{getMyCompanyJobs().then(setJobs).catch((reason:unknown)=>setError(reason instanceof Error?reason.message:'Could not load your jobs.')).finally(()=>setLoading(false));},[]);
+  async function feature(job:ManagedJob){setError('');try{const result=await api<{isFeatured:boolean}>(`/jobs/${job.id}/feature`,{method:'PATCH',body:JSON.stringify({featured:!job.isFeatured})});setJobs((current)=>current.map((item)=>item.id===job.id?{...item,isFeatured:result.isFeatured}:item));}catch(reason){setError(reason instanceof Error?reason.message:'Could not update the featured state.');}}
+  return <main className="jobs-page"><section className="jobs-container"><header className="applications-top"><div><p className="eyebrow">HIRING WORKSPACE</p><h1>Manage your jobs</h1><p>Track role performance, update listings, and meet candidates.</p></div><Link className="applications-button" to="/company/jobs/new">Create job</Link></header>{error&&<p className="message error" role="alert">{error}</p>}{loading?<div className="jobs-state"><div className="jobs-loader"/><h2>Loading your roles…</h2></div>:jobs.length===0?<div className="jobs-state"><h2>Your next great hire starts with a role.</h2><p>Create a job listing and reach candidates on CareerHub.</p><Link to="/company/jobs/new" className="applications-button">Create your first job</Link></div>:<div className="company-openings">{jobs.map((job)=><article className="company-opening" key={job.id}><div><p className="eyebrow">{job.isFeatured&&<span className="featured-badge">★ FEATURED</span>}{job.status} · {job.location??'Flexible location'}</p><h2>{job.title}</h2><p>{job._count.applications} applications · {job._pipeline.INTERVIEW??0} interviews · {job._pipeline.HIRED??0} hires</p></div><div className="opening-actions"><Link to={`/jobs/${job.id}/applicants`} className="secondary-button">View applicants</Link><Link to={`/company/jobs/${job.id}/edit`} className="secondary-button">Edit job</Link>{job.status==='PUBLISHED'&&<button className="secondary-button" type="button" onClick={()=>feature(job)}>{job.isFeatured?'Unfeature':'★ Feature'}</button>}</div></article>)}</div>}</section></main>;
+}

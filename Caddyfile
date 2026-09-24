@@ -1,0 +1,33 @@
+# Caddy — automatic HTTPS with Let's Encrypt.
+# DOMAIN and ACME_EMAIL are injected from .env by compose.
+
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+	encode zstd gzip
+
+	# API and docs
+	handle /api/* {
+		reverse_proxy api:4000
+	}
+	handle /docs* {
+		reverse_proxy api:4000
+	}
+	handle /health {
+		reverse_proxy api:4000
+	}
+
+	# Everything else: the SPA
+	handle {
+		reverse_proxy web:80
+	}
+
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "strict-origin-when-cross-origin"
+		-Server
+	}
+}

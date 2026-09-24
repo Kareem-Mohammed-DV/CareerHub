@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CareerHub — خريطة الموقع</title>
+<style>
+  :root { --blue:#2e6ef2; --mint:#10b981; --ink:#0f172a; --muted:#64748b; --bg:#f6f8fb; --card:#ffffffcc; --line:#e2e8f0; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:'Segoe UI', Tahoma, sans-serif; background:var(--bg); color:var(--ink); padding:40px 20px; }
+  .wrap { max-width:1080px; margin:0 auto; }
+  h1 { font-size:32px; margin-bottom:6px; }
+  .sub { color:var(--muted); margin-bottom:32px; }
+  .stats { display:flex; gap:14px; flex-wrap:wrap; margin-bottom:32px; }
+  .stat { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:16px 22px; backdrop-filter:blur(8px); }
+  .stat b { display:block; font-size:26px; color:var(--blue); }
+  .stat span { font-size:13px; color:var(--muted); }
+  h2 { font-size:20px; margin:28px 0 12px; padding-right:12px; border-right:4px solid var(--blue); }
+  h2.mint { border-color:var(--mint); }
+  h2.orange { border-color:#f59e0b; }
+  h2.red { border-color:#ef4444; }
+  .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(240px,1fr)); gap:12px; }
+  a.node { display:block; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:14px 16px; text-decoration:none; color:var(--ink); backdrop-filter:blur(8px); transition:transform .15s, box-shadow .15s; }
+  a.node:hover { transform:translateY(-2px); box-shadow:0 8px 24px rgba(46,110,242,.12); }
+  a.node code { display:block; font-size:13px; color:var(--blue); direction:ltr; text-align:left; margin-bottom:4px; }
+  a.node span { font-size:14px; font-weight:600; }
+  a.node small { display:block; color:var(--muted); font-size:12px; margin-top:2px; }
+  .flow { background:var(--card); border:1px solid var(--line); border-radius:16px; padding:22px; margin-top:8px; line-height:2; }
+  .flow b { color:var(--blue); }
+  footer { margin-top:40px; color:var(--muted); font-size:13px; text-align:center; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>🗺️ خريطة موقع CareerHub</h1>
+  <p class="sub">كل صفحات المنصة (27 مسار) — اضغط أي كارت لفتحه مباشرة على <code>localhost:5173</code></p>
+
+  <div class="stats">
+    <div class="stat"><b>27</b><span>مسار (Route)</span></div>
+    <div class="stat"><b>3</b><span>أدوار: باحث عمل / شركة / أدمن</span></div>
+    <div class="stat"><b>12</b><span>جدول قاعدة بيانات</span></div>
+    <div class="stat"><b>100%</b><span>الصفحات مُختبرة</span></div>
+  </div>
+
+  <h2>🌍 الصفحات العامة (بدون تسجيل دخول)</h2>
+  <div class="grid">
+    <a class="node" href="http://localhost:5173/" target="_blank"><code>/</code><span>الصفحة الرئيسية</span><small>Hero + أحدث الوظائف</small></a>
+    <a class="node" href="http://localhost:5173/jobs" target="_blank"><code>/jobs</code><span>البحث عن وظائف</span><small>فلاتر + بحث + pagination</small></a>
+    <a class="node" href="http://localhost:5173/jobs/:id" target="_blank"><code>/jobs/:id</code><span>تفاصيل وظيفة</span><small>تقديم / حفظ / مشاركة</small></a>
+    <a class="node" href="http://localhost:5173/company/nile-tech" target="_blank"><code>/company/:slug</code><span>صفحة الشركة العامة</span><small>نبذة + وظايفها المنشورة</small></a>
+    <a class="node" href="http://localhost:5173/login" target="_blank"><code>/login</code><span>تسجيل الدخول</span></a>
+    <a class="node" href="http://localhost:5173/register" target="_blank"><code>/register</code><span>إنشاء حساب</span><small>JOB_SEEKER أو COMPANY</small></a>
+    <a class="node" href="http://localhost:5173/forbidden" target="_blank"><code>/forbidden</code><span>403 — صلاحيات ناقصة</span></a>
+  </div>
+
+  <h2 class="mint">👤 منطقة باحث العمل (JOB_SEEKER)</h2>
+  <div class="grid">
+    <a class="node" href="http://localhost:5173/job-seeker/dashboard" target="_blank"><code>/job-seeker/dashboard</code><span>الداشبورد</span><small>ملخص التقديمات + اقتراحات</small></a>
+    <a class="node" href="http://localhost:5173/applications" target="_blank"><code>/applications</code><span>تقديماتي</span><small>9 فلاتر حالة + timeline</small></a>
+    <a class="node" href="http://localhost:5173/profile" target="_blank"><code>/profile</code><span>بروفايلي</span><small>مقياس قوة البروفايل + خبرات</small></a>
+    <a class="node" href="http://localhost:5173/settings" target="_blank"><code>/settings</code><span>الإعدادات</span><small>تغيير كلمة السر</small></a>
+  </div>
+
+  <h2 class="mint">🏢 منطقة الشركة (COMPANY)</h2>
+  <div class="grid">
+    <a class="node" href="http://localhost:5173/company/dashboard" target="_blank"><code>/company/dashboard</code><span>داشبورد الشركة</span><small>إحصائيات + إدارة البروفايل</small></a>
+    <a class="node" href="http://localhost:5173/company/jobs" target="_blank"><code>/company/jobs</code><span>وظايف الشركة</span><small>نشر / تعديل / إغلاق</small></a>
+    <a class="node" href="http://localhost:5173/company/jobs/new" target="_blank"><code>/company/jobs/new</code><span>نشر وظيفة جديدة</span></a>
+    <a class="node" href="http://localhost:5173/company/applicants" target="_blank"><code>/company/applicants</code><span>المتقدمون</span><small>Pipeline + تغيير الحالة</small></a>
+  </div>
+
+  <h2 class="orange">🛡️ لوحة الأدمن (ADMIN)</h2>
+  <div class="grid">
+    <a class="node" href="http://localhost:5173/admin" target="_blank"><code>/admin</code><span>نظرة عامة</span><small>أرقام المنصة الكاملة</small></a>
+    <a class="node" href="http://localhost:5173/admin/users" target="_blank"><code>/admin/users</code><span>إدارة المستخدمين</span><small>حظر / تنشيط / ترقية</small></a>
+    <a class="node" href="http://localhost:5173/admin/companies" target="_blank"><code>/admin/companies</code><span>إدارة الشركات</span></a>
+    <a class="node" href="http://localhost:5173/admin/jobs" target="_blank"><code>/admin/jobs</code><span>إدارة الوظائف</span></a>
+    <a class="node" href="http://localhost:5173/admin/applications" target="_blank"><code>/admin/applications</code><span>إدارة التقديمات</span></a>
+  </div>
+
+  <h2 class="red">🔁 مشتركة بين كل الأدوار المسجلة</h2>
+  <div class="grid">
+    <a class="node" href="http://localhost:5173/messages" target="_blank"><code>/messages</code><span>الرسائل</span><small>محادثات real-time polling</small></a>
+    <a class="node" href="http://localhost:5173/notifications" target="_blank"><code>/notifications</code><span>الإشعارات</span></a>
+    <a class="node" href="http://localhost:5173/dashboard" target="_blank"><code>/dashboard</code><span>محوّل ذكي</span><small>يوجه كل دور لداشبورده</small></a>
+  </div>
+
+  <h2>🔑 حسابات التجربة (كلها بنفس كلمة السر)</h2>
+  <div class="flow">
+    كلمة السر لكل الحسابات: <b>Passw0rd!123</b><br>
+    👤 باحث عمل: <code>test@careerhub.dev</code> &nbsp;|&nbsp;
+    🏢 شركة: <code>jobs@niletech.dev</code> (Nile Tech) &nbsp;|&nbsp;
+    🛡️ أدمن: <code>sara@careerhub.dev</code><br>
+    📚 Swagger API: <a href="http://localhost:4000/docs" target="_blank">localhost:4000/docs</a>
+  </div>
+
+  <footer>CareerHub — تم توليدها تلقائيًا كجزء من توثيق المشروع</footer>
+</div>
+</body>
+</html>

@@ -1,0 +1,12 @@
+{
+  "name": "CareerHub — Next Generation Career Platform",
+  "short_name": "CareerHub",
+  "description": "Discover opportunities and connect companies with talented professionals.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f6f8fb",
+  "theme_color": "#2e6ef2",
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

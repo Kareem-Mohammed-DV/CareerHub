@@ -1,0 +1,91 @@
+# CareerHub — production compose
+# Usage on the VPS:
+#   cp .env.production.example .env   # fill real secrets first
+#   docker compose -f docker-compose.prod.yml up -d --build
+#
+# Caddy terminates HTTPS automatically (Let's Encrypt) and routes:
+#   https://your-domain/        -> web (static SPA)
+#   https://your-domain/api/*   -> api:4000
+#   https://your-domain/docs    -> api:4000
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:?POSTGRES_DB is required}
+      POSTGRES_USER: ${POSTGRES_USER:?POSTGRES_USER is required}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD is required}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    # Not published to the host on purpose — only the internal network can reach it.
+    # For a manual psql session use: docker compose -f docker-compose.prod.yml exec postgres psql ...
+
+  api:
+    build: ./backend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
+      NODE_ENV: production
+      # WEB_ORIGIN comes from .env (must be your real https:// domain)
+    volumes:
+      - resumes_data:/app/uploads/resumes
+    depends_on:
+      postgres:
+        condition: service_healthy
+    # Migrations are the reviewed, versioned path — never db push in production.
+    command: sh -c "npx prisma migrate deploy && node dist/server.js"
+    expose:
+      - "4000"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:4000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    networks: [default, caddy]
+
+  web:
+    build:
+      context: ./frontend
+      # Same-origin relative URL: Caddy routes /api/* to the api service.
+      args:
+        VITE_API_URL: /api/v1
+    restart: unless-stopped
+    expose:
+      - "80"
+    depends_on:
+      api:
+        condition: service_healthy
+    networks: [default, caddy]
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?DOMAIN is required}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - web
+      - api
+
+volumes:
+  postgres_data:
+  caddy_data:
+  caddy_config:
+  resumes_data:
+
+networks:
+  caddy:

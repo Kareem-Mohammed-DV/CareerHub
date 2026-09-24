@@ -1,0 +1,27 @@
+# Secrets & environment
+.env
+.env.*
+!.env.example
+!.env.production.example
+
+# Dependencies
+node_modules/
+
+# Build artifacts
+dist/
+build/
+*.tsbuildinfo
+
+# Runtime data
+uploads/
+backups/
+*.log
+coverage/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+
+# Temp / backup files
+*.tmp
+*.bak
