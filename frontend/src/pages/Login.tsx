@@ -1,12 +1,15 @@
 import { FormEvent, useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../auth/AuthContext';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function Login() {    usePageTitle("Sign in");
 
     const navigate = useNavigate();
+    const location = useLocation();
     const { signIn } = useAuth();
+    // Where the user was heading before being asked to sign in (set by the Access guard).
+    const intendedDestination = (location.state as { from?: string } | null)?.from;
 
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -21,7 +24,8 @@ export default function Login() {    usePageTitle("Sign in");
 
         try {
             await signIn(email, password);
-            navigate('/dashboard');
+            // Return to the page the user was trying to reach, if any.
+            navigate(intendedDestination ?? '/dashboard');
         } catch (error) {
             setMessage(
                 error instanceof Error

@@ -4,6 +4,7 @@ import Home from './pages/Home';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Jobs from './pages/jobs';
+import Companies from './pages/Companies';
 import JobDetails from './pages/JobDetails';
 import Applications from './pages/Applications';
 import CompanyDashboard from './pages/CompanyDashboard';
@@ -61,6 +62,8 @@ function AppRoutes() {
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
       <Route path="/jobs" element={<Jobs />} />
+      <Route path="/jobs/featured" element={<Jobs />} />
+      <Route path="/companies" element={<Companies />} />
       <Route path="/jobs/:id" element={<JobDetails />} />
       <Route path="/company/:slug" element={<CompanyProfile />} />
       <Route path="/dashboard" element={<Access roles={['JOB_SEEKER','COMPANY','ADMIN']}><DashboardRedirect /></Access>} />

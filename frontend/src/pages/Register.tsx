@@ -1,10 +1,14 @@
 import { useState, type FormEvent } from 'react';
 import { Link } from 'react-router-dom';
 import { register, type Role } from '../api/auth';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../auth/AuthContext';
 import { usePageTitle } from '../hooks/usePageTitle';
 
 export default function Register() {
     usePageTitle("Create account");
+  const navigate = useNavigate();
+  const { signIn } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [role, setRole] = useState<Role>('JOB_SEEKER');
@@ -16,8 +20,10 @@ export default function Register() {
     event.preventDefault(); setLoading(true); setMessage(''); setError('');
     try {
       await register(email, password, role);
-      setMessage('Your account is ready. Sign in to continue.');
-      setEmail(''); setPassword(''); setRole('JOB_SEEKER');
+      // Sign straight in (through the auth context, which stores the session)
+      // so the new user lands on their dashboard without a second form.
+      await signIn(email, password);
+      navigate('/dashboard');
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'Registration failed. Please try again.');
     } finally { setLoading(false); }

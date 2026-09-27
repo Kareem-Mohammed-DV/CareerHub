@@ -132,6 +132,10 @@ export async function getJobs(
     return body as JobsResponse;
 }
 
+export async function getFeaturedJobs(): Promise<Job[]> {
+    return api<Job[]>('/jobs/featured');
+}
+
 export async function getJob(id: string): Promise<Job> {
     return api<Job>(`/jobs/${id}`);
 }

@@ -16,12 +16,11 @@ export default function Navbar() {
     api<NotificationCount[]>('/notifications').then((items) => setUnreadCount(items.filter((item) => !item.readAt).length)).catch(() => setUnreadCount(0));
   }, [user?.id]);
   const links = user?.role === 'ADMIN'
-    ? [['Admin overview','/admin'],['Users','/admin/users'],['Companies','/admin/companies'],['Jobs','/admin/jobs'],['Applications','/admin/applications']]
+    ? [['Admin overview','/admin'],['Users','/admin/users'],['Companies','/admin/companies'],['Jobs','/admin/jobs'],['Applications','/admin/applications'],['Featured jobs','/jobs/featured']]
     : user?.role === 'COMPANY'
-      ? [['Dashboard','/company/dashboard'],['Jobs','/company/jobs'],['Applicants','/company/applicants'],['Analytics','/company/analytics'],['Billing','/company/billing'],['Messages','/messages'],['Company profile','/company/profile']]
-      : user
-        ? [['Jobs','/jobs'],['Dashboard','/job-seeker/dashboard'],['Applications','/applications'],['Saved jobs','/saved-jobs'],['Job alerts','/job-alerts'],['Messages','/messages'],['Notifications','/notifications'],['Profile','/profile']]
-        : [['Jobs','/jobs'],['Pricing','/pricing']];
+      ? [['Dashboard','/company/dashboard'],['Jobs','/company/jobs'],['Applicants','/company/applicants'],['Analytics','/company/analytics'],['Billing','/company/billing'],['Messages','/messages'],['Notifications','/notifications'],['Company profile','/company/profile'],['Featured jobs','/jobs/featured'],['Companies','/companies']]        : user
+          ? [['Jobs','/jobs'],['Companies','/companies'],['Featured','/jobs/featured'],['Dashboard','/job-seeker/dashboard'],['Applications','/applications'],['Saved jobs','/saved-jobs'],['Job alerts','/job-alerts'],['Messages','/messages'],['Notifications','/notifications'],['Profile','/profile']]
+          : [['Jobs','/jobs'],['Companies','/companies'],['Featured','/jobs/featured'],['Pricing','/pricing']];
 
   async function logout() {
     await signOut().catch(() => undefined);

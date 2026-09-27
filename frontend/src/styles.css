@@ -6512,3 +6512,13 @@ img {
   .alert-form .jobs-filter-grid { grid-template-columns: 1fr; }
   .jobs-filter-grid { grid-template-columns: 1fr 1fr; }
 }
+
+/* Company name inside job cards is a plain-looking link (same style as text). */
+.company-name a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.company-name a:hover {
+    text-decoration: underline;
+}

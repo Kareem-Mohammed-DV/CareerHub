@@ -4,9 +4,21 @@ import { prisma } from '../../database/prisma.js';
 import { authenticate, authorize } from '../../common/auth.middleware.js';
 import { asyncHandler } from '../../common/async.js';
 import { AppError } from '../../common/errors.js';
+import { pageMeta, paginationSchema } from '../../common/pagination.js';
 
 export const companiesRouter = Router();
 const companyInput = z.object({ name: z.string().min(2).max(150), slug: z.string().regex(/^[a-z0-9-]+$/).max(170), description: z.string().max(10000).optional(), website: z.string().url().optional(), industry: z.string().max(100).optional(), size: z.string().max(50).optional(), location: z.string().max(120).optional(), logoUrl: z.string().url().optional() });
+// Public directory of verified companies with open roles (for the /companies page).
+companiesRouter.get('/', asyncHandler(async (req, res) => {
+    const { page, limit } = paginationSchema.parse(req.query);
+    const q = req.query.q ? String(req.query.q) : undefined;
+    const where = { verificationStatus: 'VERIFIED' as const, ...(q ? { OR: [{ name: { contains: q, mode: 'insensitive' as const } }, { industry: { contains: q, mode: 'insensitive' as const } }] } : {}) };
+    const [data, total] = await prisma.$transaction([
+        prisma.company.findMany({ where, select: { id: true, name: true, slug: true, description: true, industry: true, location: true, logoUrl: true, _count: { select: { jobs: { where: { status: 'PUBLISHED' } } } } }, orderBy: { createdAt: 'desc' }, skip: (page - 1) * limit, take: limit }),
+        prisma.company.count({ where }),
+    ]);
+    res.json({ data, meta: pageMeta(page, limit, total) });
+}));
 companiesRouter.get('/slug/:slug', asyncHandler(async (req, res) => {
     const slug = Array.isArray(req.params.slug) ? req.params.slug[0] : req.params.slug;
 

@@ -1,6 +1,6 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { getJobs, type Job } from '../api/jobs';
+import { getJobs, getFeaturedJobs, type Job } from '../api/jobs';
 import { useAuth } from '../auth/AuthContext';
 import { api } from '../api/client';
 import { usePageTitle } from '../hooks/usePageTitle';
@@ -22,6 +22,10 @@ export default function Jobs() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
+    // Featured-only view (served at /jobs/featured): same list UI, curated feed.
+    const featuredOnly = window.location.pathname === '/jobs/featured';
+    usePageTitle(featuredOnly ? "Featured jobs" : "Find jobs");
+
     const [q, setQ] = useState('');
     const [category, setCategory] = useState('');
     const [location, setLocation] = useState('');
@@ -38,6 +42,15 @@ export default function Jobs() {
         try {
             setLoading(true);
             setError('');
+
+            if (featuredOnly) {
+                // Featured feed: flat list from the dedicated endpoint, no pagination.
+                const data = await getFeaturedJobs();
+                setJobs(data);
+                setTotalPages(0);
+                setTotalResults(data.length);
+                return;
+            }
 
             const response = await getJobs({
                 q: (override.q ?? q).trim() || undefined,
@@ -148,14 +161,23 @@ export default function Jobs() {
                         </p>
 
                         <h1>
-                            Find your
-                            <span> next opportunity.</span>
+                            {featuredOnly ? (
+                                <>
+                                    Featured
+                                    <span> opportunities.</span>
+                                </>
+                            ) : (
+                                <>
+                                    Find your
+                                    <span> next opportunity.</span>
+                                </>
+                            )}
                         </h1>
 
                         <p className="jobs-header-description">
-                            Explore opportunities that match
-                            your skills, experience, and career
-                            goals. Your next move starts here.
+                            {featuredOnly
+                                ? 'Hand-picked roles highlighted by hiring teams. New highlights appear here first.'
+                                : 'Explore opportunities that match your skills, experience, and career goals. Your next move starts here.'}
                         </p>
 
                         <div className="jobs-header-meta">
@@ -241,22 +263,30 @@ export default function Jobs() {
                     className="jobs-filters"
                     onSubmit={handleSearch}
                     data-reveal
-                >
+                    style={featuredOnly ? { display: 'none' } : undefined}
+                >                            <div className="jobs-filter-heading">
 
-                    <div className="jobs-filter-heading">
+                                <div>
 
-                        <div>
+                                    <p className="eyebrow">
+                                        {featuredOnly ? 'FEATURED FEED' : 'SEARCH ENGINE'}
+                                    </p>
 
-                            <p className="eyebrow">
-                                SEARCH ENGINE
-                            </p>
+                                    <h2>
+                                        {featuredOnly ? (
+                                            <>
+                                                Spotlight
+                                                <span> roles.</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                Find the right
+                                                <span> role.</span>
+                                            </>
+                                        )}
+                                    </h2>
 
-                            <h2>
-                                Find the right
-                                <span> role.</span>
-                            </h2>
-
-                        </div>
+                                </div>
 
                         <div className="jobs-filter-status">
                             <span className="status-dot" />
@@ -615,11 +645,9 @@ export default function Jobs() {
                             </h2>
 
                             <p>
-                                We couldn't find any
-                                jobs matching your
-                                current filters.
-                                Try changing your
-                                search.
+                                {featuredOnly
+                                    ? "No featured roles right now. Check back soon, or browse all open jobs."
+                                    : "We couldn't find any jobs matching your current filters. Try changing your search."}
                             </p>
 
                             <button
@@ -709,11 +737,17 @@ export default function Jobs() {
                                                 <div>
 
                                                     <p className="company-name">
-                                                        {
-                                                            job
-                                                                .company
-                                                                .name
-                                                        }
+                                                        <Link
+                                                            to={`/company/${
+                                                                job.company.slug
+                                                            }`}
+                                                        >
+                                                            {
+                                                                job
+                                                                    .company
+                                                                    .name
+                                                            }
+                                                        </Link>
                                                     </p>
 
                                                     <p className="job-location">
