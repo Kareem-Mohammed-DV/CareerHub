@@ -132,6 +132,21 @@ export async function getJobs(
     return body as JobsResponse;
 }
 
+export type RecommendedJobs = {
+    data: Job[];
+    meta: { reason?: string; category?: string };
+};
+
+export async function getRecommendedJobs(): Promise<RecommendedJobs> {
+    return api<RecommendedJobs>('/job-recommendations/me');
+}
+
+export async function getSimilarJobs(jobId: string): Promise<RecommendedJobs> {
+    return api<RecommendedJobs>(
+        `/job-recommendations/similar/${encodeURIComponent(jobId)}`
+    );
+}
+
 export async function getFeaturedJobs(): Promise<Job[]> {
     return api<Job[]>('/jobs/featured');
 }

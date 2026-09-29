@@ -10,6 +10,7 @@ import {
     type Application,
     type ApplicationSummary,
 } from '../api/applications';
+import JobsShelf from '../components/JobsShelf';
 
 export default function JobSeekerDashboard() {
     const [profile, setProfile] =
@@ -203,6 +204,15 @@ export default function JobSeekerDashboard() {
                 </section>
 
                 <section className="dashboard-quick-actions" aria-label="Quick actions"><Link to="/jobs">Explore jobs <span>↗</span></Link><Link to="/profile">Update profile <span>↗</span></Link><Link to="/applications">Track applications <span>↗</span></Link><Link to="/messages">Open messages <span>↗</span></Link></section>
+
+                {/* Recommended jobs */}
+                <JobsShelf
+                    path="/job-recommendations/me?limit=3"
+                    heading="Recommended for you"
+                    viewAllTo="/jobs"
+                    viewAllLabel="Browse all jobs"
+                    hideMetaLine
+                />
 
                 {/* Recent Applications */}
                 <section>
