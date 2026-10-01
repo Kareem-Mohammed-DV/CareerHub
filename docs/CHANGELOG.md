@@ -3,6 +3,35 @@
 All notable changes to CareerHub are documented here.
 Format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [1.2.0] — 2026-10-02
+
+### Smart Recommendations & Social Sharing
+
+The platform now actively helps people find the right next role — and makes
+it easy to spread the word when they do.
+
+### Added
+
+- **Personalized job recommendations** for signed-in job seekers on the
+  dashboard: matches come from recently applied and **saved** job categories,
+  profile skills (title keyword match), and profile location, with a
+  newest-jobs top-up so the shelf is never empty; already-applied and saved
+  jobs are never recommended again (`GET /api/v1/job-recommendations/me`)
+- **Similar jobs** on every job details page (category + location matches,
+  public) so visitors can keep browsing without going back to search
+  (`GET /api/v1/job-recommendations/similar/:jobId`)
+- **Social share buttons** on job details — WhatsApp, LinkedIn, and X
+  intents alongside the existing copy-link button
+- **Backend integration test suite** for the recommendations module
+  (9 tests via `node:test`, covering auth guards, every recommendation
+  signal, exclusion rules, featured ordering, fallback top-up, and similar
+  jobs) — run in CI against a real Postgres service on every push
+
+### Changed
+
+- The job details “Share” button is now a “Copy link” button grouped with
+  the three social share buttons
+
 ## [1.1.0] — 2026-09-28
 
 ### Navigation & Routing Audit

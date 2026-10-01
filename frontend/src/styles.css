@@ -6593,3 +6593,61 @@ img {
         flex-wrap: wrap;
     }
 }
+
+/* Social share buttons (job details page) */
+.share-buttons {
+    display: inline-flex;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+}
+
+.share-button {
+    display: inline-flex;
+
+    align-items: center;
+
+    padding: 8px 14px;
+
+    border-radius: var(--radius-md, 10px);
+
+    border: 1px solid var(--border, rgba(15, 23, 42, 0.12));
+
+    background: var(--surface-strong, #fff);
+
+    color: var(--text-soft, #334155);
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    text-decoration: none;
+
+    transition:
+        border-color 0.2s ease,
+        color 0.2s ease,
+        transform 0.2s ease;
+}
+
+.share-button:hover {
+    transform: translateY(-2px);
+}
+
+.share-whatsapp:hover {
+    border-color: #25d366;
+
+    color: #128c7e;
+}
+
+.share-linkedin:hover {
+    border-color: #0a66c2;
+
+    color: #0a66c2;
+}
+
+.share-x:hover {
+    border-color: #0f1419;
+
+    color: #0f1419;
+}

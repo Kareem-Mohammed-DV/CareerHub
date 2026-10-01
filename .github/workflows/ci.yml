@@ -14,11 +14,33 @@ concurrency:
 
 jobs:
   backend:
-    name: Backend — typecheck & build (pnpm)
+    name: Backend — typecheck, build & test (pnpm)
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: backend
+
+    # Integration tests run against a real Postgres (same engine as production).
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: careerhub
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: careerhub_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U careerhub"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://careerhub:postgres@localhost:5432/careerhub_test?schema=public
+      JWT_ACCESS_SECRET: ci-access-secret-0123456789abcdef0123456789abcdef
+      JWT_REFRESH_SECRET: ci-refresh-secret-0123456789abcdef0123456789abcdef
+
     steps:
       - uses: actions/checkout@v4
 
@@ -44,6 +66,12 @@ jobs:
 
       - name: Build (prisma generate + tsc)
         run: npm run build
+
+      - name: Push Prisma schema (test database)
+        run: npx prisma db push --skip-generate
+
+      - name: Run integration tests
+        run: npm test
 
   frontend:
     name: Frontend — typecheck & build (npm)

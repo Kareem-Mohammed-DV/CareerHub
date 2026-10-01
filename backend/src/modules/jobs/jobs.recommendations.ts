@@ -17,23 +17,31 @@ function profileSkills(skills: unknown): string[] {
 
 /**
  * Personalized recommendations for the signed-in job seeker.
- * Signal sources, in order: recent applications (their job categories),
- * profile skills (title keyword match), profile location (same city),
- * then the newest published jobs as fallback so the shelf is never empty.
- * Jobs already applied to are always excluded.
+ * Signal sources, in order: recent applications and saved jobs (their job
+ * categories), profile skills (title keyword match), profile location (same
+ * city), then the newest published jobs as fallback so the shelf is never
+ * empty. Jobs already applied to or saved are always excluded.
  */
 recommendationsRouter.get('/me', authenticate, authorize('JOB_SEEKER'), asyncHandler(async (req, res) => {
   const { limit } = paginationSchema.parse({ limit: req.query.limit ?? 6 });
   const profile = await prisma.jobSeekerProfile.findUnique({ where: { userId: req.user!.id }, select: { location: true, skills: true } });
-  const recentApplications = await prisma.application.findMany({
-    where: { userId: req.user!.id },
-    select: { jobId: true, job: { select: { category: true } } },
-    orderBy: { appliedAt: 'desc' },
-    take: 50,
-  });
+  const [recentApplications, savedJobs] = await Promise.all([
+    prisma.application.findMany({
+      where: { userId: req.user!.id },
+      select: { jobId: true, job: { select: { category: true } } },
+      orderBy: { appliedAt: 'desc' },
+      take: 50,
+    }),
+    prisma.savedJob.findMany({
+      where: { userId: req.user!.id },
+      select: { jobId: true, job: { select: { category: true } } },
+      orderBy: { createdAt: 'desc' },
+      take: 50,
+    }),
+  ]);
 
-  const excludedJobIds = [...new Set(recentApplications.map((application) => application.jobId))];
-  const recentCategories = [...new Set(recentApplications.map((application) => application.job.category))];
+  const excludedJobIds = [...new Set([...recentApplications.map((application) => application.jobId), ...savedJobs.map((saved) => saved.jobId)])];
+  const recentCategories = [...new Set([...recentApplications.map((application) => application.job.category), ...savedJobs.map((saved) => saved.job.category)])];
   const skills = profileSkills(profile?.skills);
   const matchers: Array<Record<string, unknown>> = [];
   if (recentCategories.length > 0) matchers.push({ category: { in: recentCategories } });
